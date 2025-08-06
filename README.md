@@ -88,15 +88,6 @@ Traditional system monitors show boring graphs and numbers. LiveScope turns your
 - **System Administrators** keeping an eye on server performance
 - **Anyone** who wants their terminal to look absolutely stunning
 
-## 📊 Coming Soon
-
-- [ ] Disk I/O visualization patterns
-- [ ] Network bandwidth particle trails  
-- [ ] Custom color theme creation
-- [ ] Save/load configuration profiles
-- [ ] Plugin system for custom visualizers
-- [ ] Real-time audio reactive mode
-
 ---
 
 *"Your system metrics have never looked this good!"* ⚡
