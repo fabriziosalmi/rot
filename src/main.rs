@@ -41,6 +41,7 @@ struct LiveScope {
     cpu_history: Vec<Vec<f32>>,
     memory_wave: Vec<f32>,
     particles: Vec<Particle>,
+    particles_enabled: bool,
     gradient: colorgrad::Gradient,
     rng: ThreadRng,
 }
@@ -84,6 +85,7 @@ impl LiveScope {
             cpu_history,
             memory_wave,
             particles: Vec::new(),
+            particles_enabled: true,
             gradient,
             rng: thread_rng(),
         })
@@ -120,7 +122,7 @@ impl LiveScope {
         });
         
         // Spawn new particles based on network activity
-        if self.rng.gen_bool(0.3) {
+        if self.particles_enabled && self.rng.gen_bool(0.3) {
             self.particles.push(Particle {
                 x: self.rng.gen_range(0.0..self.width as f32),
                 y: 0.0,
@@ -173,16 +175,18 @@ impl LiveScope {
             }
         }
         
-        // Render particles
-        for particle in &self.particles {
-            if particle.life > 0.0 {
-                let color = self.gradient.at(particle.life as f64).to_rgba8();
-                execute!(
-                    stdout,
-                    MoveTo(particle.x as u16, particle.y as u16),
-                    SetForegroundColor(Color::Rgb { r: color[0], g: color[1], b: color[2] }),
-                    Print(particle.char)
-                )?;
+        // Render particles (only if enabled)
+        if self.particles_enabled {
+            for particle in &self.particles {
+                if particle.life > 0.0 {
+                    let color = self.gradient.at(particle.life as f64).to_rgba8();
+                    execute!(
+                        stdout,
+                        MoveTo(particle.x as u16, particle.y as u16),
+                        SetForegroundColor(Color::Rgb { r: color[0], g: color[1], b: color[2] }),
+                        Print(particle.char)
+                    )?;
+                }
             }
         }
         
@@ -231,23 +235,31 @@ impl LiveScope {
         }
     }
     
+    fn toggle_particles(&mut self) {
+        self.particles_enabled = !self.particles_enabled;
+        if !self.particles_enabled {
+            self.particles.clear(); // Clear existing particles when disabled
+        }
+    }
+    
     fn render_info_panel(&mut self, stdout: &mut std::io::Stdout) -> Result<()> {
         let info_y = self.height - 5;
         let cpu_usage: f32 = self.system.cpus().iter().map(|cpu| cpu.cpu_usage()).sum::<f32>() / self.system.cpus().len() as f32;
         let memory_percent = (self.system.used_memory() as f64 / self.system.total_memory() as f64 * 100.0) as u8;
         
+        let particle_status = if self.particles_enabled { "ON" } else { "OFF" };
         execute!(
             stdout,
             MoveTo(2, info_y),
             SetForegroundColor(Color::White),
-            Print(format!("LiveScope v0.1.0 | CPU: {:.1}% | RAM: {}% | Particles: {}", 
-                         cpu_usage, memory_percent, self.particles.len()))
+            Print(format!("LiveScope v0.1.0 | CPU: {:.1}% | RAM: {}% | Particles: {} [{}]", 
+                         cpu_usage, memory_percent, self.particles.len(), particle_status))
         )?;
         
         execute!(
             stdout,
             MoveTo(2, info_y + 1),
-            Print("Press 'q' to quit, 'p' for particles toggle")
+            Print("Press 'q' to quit, 'p' to toggle particles")
         )?;
         
         Ok(())
@@ -274,7 +286,7 @@ async fn main() -> Result<()> {
                     match key_event.code {
                         KeyCode::Char('q') => break,
                         KeyCode::Char('p') => {
-                            // Toggle particles (could implement)
+                            livescope.toggle_particles();
                         }
                         _ => {}
                     }
