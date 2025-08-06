@@ -16,7 +16,7 @@ LiveScope transforms your system's performance metrics into mesmerizing real-tim
 ### Build from Source
 ```bash
 # Clone the repository
-git clone <your-repo>
+git clone https://github.com/fabriziosalmi/rot
 cd livescope
 
 # Build the project
