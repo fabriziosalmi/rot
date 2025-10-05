@@ -25,7 +25,7 @@ struct Args {
     #[arg(short, long, default_value = "16")]
     refresh: u64,
     
-    /// Enable particle effects for network activity
+    /// Enable particle effects
     #[arg(short, long)]
     particles: bool,
     
@@ -121,7 +121,7 @@ impl LiveScope {
             p.life > 0.0 && p.x >= 0.0 && p.x < self.width as f32 && p.y >= 0.0 && p.y < self.height as f32
         });
         
-        // Spawn new particles based on network activity
+        // Spawn new particles randomly
         if self.particles_enabled && self.rng.gen_bool(0.3) {
             self.particles.push(Particle {
                 x: self.rng.gen_range(0.0..self.width as f32),
