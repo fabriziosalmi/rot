@@ -6,7 +6,7 @@ LiveScope transforms your system's performance metrics into mesmerizing real-tim
 
 - **🔥 CPU Visualization**: Each CPU core creates unique animated patterns and colors
 - **🌊 Memory Waves**: RAM usage flows as dynamic waves across the screen  
-- **⭐ Particle Effects**: Network and disk I/O activity creates beautiful particle systems
+- **⭐ Particle Effects**: Beautiful particle systems for visual flair (toggle with 'p' key)
 - **🎨 Multiple Themes**: Fire, Ocean, Matrix, and Rainbow color schemes
 - **⚡ High Performance**: Runs at 60fps with minimal resource usage
 - **🖥️ Terminal Native**: No GUI required - pure ASCII art magic
@@ -17,7 +17,7 @@ LiveScope transforms your system's performance metrics into mesmerizing real-tim
 ```bash
 # Clone the repository
 git clone https://github.com/fabriziosalmi/rot
-cd livescope
+cd rot
 
 # Build the project
 cargo build --release
@@ -47,7 +47,7 @@ cargo run -- --particles
 ## 🎮 Controls
 
 - **`q`** - Quit LiveScope
-- **`p`** - Toggle particle effects (coming soon)
+- **`p`** - Toggle particle effects on/off
 
 ## 🎨 Themes
 
@@ -68,8 +68,7 @@ LiveScope creates different visual patterns based on your system metrics:
 
 - **CPU Cores**: Each core gets its own horizontal band with intensity-based patterns
 - **Memory Usage**: Sine wave patterns that grow/shrink with RAM consumption  
-- **Network I/O**: Falling particles that speed up with network activity
-- **Disk Activity**: Geometric patterns that pulse with file system operations
+- **Network/System Activity**: Falling particles that create dynamic visual effects
 
 ## 🛠️ Technical Details
 
