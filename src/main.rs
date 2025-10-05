@@ -14,7 +14,7 @@ use std::{
 };
 use sysinfo::System;
 use tokio::time::sleep;
-use colorgrad::{self, Gradient};
+use colorgrad::{self};
 
 /// LiveScope - Real-time System Performance Art Visualizer
 #[derive(Parser)]
@@ -25,7 +25,7 @@ struct Args {
     #[arg(short, long, default_value = "16")]
     refresh: u64,
     
-    /// Enable particle effects for network activity
+    /// Enable particle effects
     #[arg(short, long)]
     particles: bool,
     
@@ -56,7 +56,7 @@ struct Particle {
 }
 
 impl LiveScope {
-    fn new(theme: &str) -> Result<Self> {
+    fn new(theme: &str, particles_enabled: bool) -> Result<Self> {
         let (width, height) = size()?;
         let mut system = System::new_all();
         system.refresh_all();
@@ -85,7 +85,7 @@ impl LiveScope {
             cpu_history,
             memory_wave,
             particles: Vec::new(),
-            particles_enabled: true,
+            particles_enabled,
             gradient,
             rng: thread_rng(),
         })
@@ -121,7 +121,7 @@ impl LiveScope {
             p.life > 0.0 && p.x >= 0.0 && p.x < self.width as f32 && p.y >= 0.0 && p.y < self.height as f32
         });
         
-        // Spawn new particles based on network activity
+        // Spawn new particles randomly
         if self.particles_enabled && self.rng.gen_bool(0.3) {
             self.particles.push(Particle {
                 x: self.rng.gen_range(0.0..self.width as f32),
@@ -209,7 +209,7 @@ impl LiveScope {
         self.cpu_history[cpu_index][col as usize] / 100.0
     }
     
-    fn calculate_memory_wave(&self, col: usize, row: u16, wave_height: u16) -> u16 {
+    fn calculate_memory_wave(&self, col: usize, _row: u16, wave_height: u16) -> u16 {
         if col >= self.memory_wave.len() {
             return wave_height / 2;
         }
@@ -273,7 +273,7 @@ async fn main() -> Result<()> {
     enable_raw_mode()?;
     execute!(stdout(), EnterAlternateScreen, Hide)?;
     
-    let mut livescope = LiveScope::new(&args.theme)?;
+    let mut livescope = LiveScope::new(&args.theme, args.particles)?;
     let refresh_duration = Duration::from_millis(args.refresh);
     
     loop {
